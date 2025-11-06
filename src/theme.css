@@ -1,0 +1,17 @@
+:root {
+  --bg: #f5f5f5;
+  --text: #222;
+  --primary: #0066ff;
+  --card-bg: #fff;
+  --border: #ddd;
+  --shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+[data-theme="dark"] {
+  --bg: #121212;
+  --text: #e0e0e0;
+  --primary: #4da6ff;
+  --card-bg: #1e1e1e;
+  --border: #333;
+  --shadow: 0 2px 6px rgba(0,0,0,.4);
+}
