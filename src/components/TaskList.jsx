@@ -1,19 +1,52 @@
-import React from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import React, { memo } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useTasks } from '../context/TaskContext';
 import TaskItem from './TaskItem';
-import { memo } from 'react';
 
 const TaskList = () => {
-  const { filteredTasks, moveTask } = useTasks();
+  const { tasks, filteredTasks, moveTask } = useTasks();
 
-  const handleDragEnd = (result) => {
+  const onDragEnd = (result) => {
     if (!result.destination) return;
-    moveTask(result.source.index, result.destination.index);
+    if (result.destination.index === result.source.index) return;
+
+    const sourceIdx = result.source.index;
+    const destIdx = result.destination.index;
+    const sourceTask = filteredTasks[sourceIdx];
+    const sourceTaskId = sourceTask.id;
+    const sourceMasterIdx = tasks.findIndex((t) => t.id === sourceTaskId);
+
+    if (sourceMasterIdx === -1) return;
+
+    const reorderedFiltered = Array.from(filteredTasks);
+    const [movedTask] = reorderedFiltered.splice(sourceIdx, 1);
+    reorderedFiltered.splice(destIdx, 0, movedTask);
+
+    let destMasterIdx;
+
+    if (destIdx === reorderedFiltered.length - 1) {
+      const lastFilteredTaskId = reorderedFiltered[reorderedFiltered.length - 2]?.id;
+      if (lastFilteredTaskId) {
+        const lastFilteredTaskIdx = tasks.findIndex((t) => t.id === lastFilteredTaskId);
+        destMasterIdx = lastFilteredTaskIdx !== -1 ? lastFilteredTaskIdx + 1 : tasks.length;
+      } else {
+        destMasterIdx = tasks.length;
+      }
+    } else {
+      const nextTaskId = reorderedFiltered[destIdx + 1].id;
+      destMasterIdx = tasks.findIndex((t) => t.id === nextTaskId);
+      if (destMasterIdx === -1) destMasterIdx = tasks.length;
+    }
+
+    if (sourceMasterIdx < destMasterIdx) {
+      destMasterIdx -= 1;
+    }
+
+    moveTask(sourceMasterIdx, destMasterIdx);
   };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="tasks">
         {(provided) => (
           <ul
@@ -21,17 +54,22 @@ const TaskList = () => {
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {filteredTasks.map((task, idx) => (
-              <Draggable key={task.id} draggableId={task.id} index={idx}>
-                {(provided, snapshot) => (
+            {filteredTasks.map((task, index) => (
+              <Draggable
+                key={task.id}
+                draggableId={String(task.id)}
+                index={index}
+              >
+                {(dragProvided, snapshot) => (
                   <TaskItem
                     task={task}
-                    provided={provided}
+                    provided={dragProvided}
                     isDragging={snapshot.isDragging}
                   />
                 )}
               </Draggable>
             ))}
+
             {provided.placeholder}
           </ul>
         )}

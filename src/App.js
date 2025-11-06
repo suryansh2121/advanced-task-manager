@@ -5,6 +5,7 @@ import TaskForm from './components/TaskForm';
 import FilterButtons from './components/FilterButton';
 import TaskList from './components/TaskList';
 import './App.css';
+
 function AppContent() {
   const { theme } = useTasks();
 

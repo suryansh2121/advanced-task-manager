@@ -1,122 +1,255 @@
-/* ---------- Layout ---------- */
-.container {
-  max-width: 640px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* ---------- Theme Toggle ---------- */
+html {
+  font-size: 100%;
+}
+
+body {
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 1rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+:root {
+  --bg: #f5f7fb;
+  --text: #222;
+  --primary: #834eff;
+  --primary-light: #d0a6ff;
+  --card-bg: #fff;
+  --border: #dcdfe3;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  --muted: #777;
+}
+
+[data-theme="dark"] {
+  --bg: #0f1116;
+  --text: #e0e0e0;
+  --primary: #4da6ff;
+  --primary-light: #1e3a5f;
+  --card-bg: #1a1d23;
+  --border: #333;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --muted: #aaa;
+}
+
+.container {
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
 .theme-btn {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: none;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
   border: none;
-  font-size: 1.5rem;
+  color: #fff;
+  font-size: 0.9rem;
   cursor: pointer;
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-/* ---------- Form ---------- */
-.task-form {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-.task-form input {
-  flex: 1;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--card-bg);
-  color: var(--text);
-}
-.task-form button {
-  padding: 0 1rem;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.task-form button:hover {
+.theme-btn:hover {
+  transform: translateY(-2px);
   opacity: 0.9;
 }
 
-/* ---------- Filter Bar ---------- */
+
+.task-form {
+  display: flex;
+  gap: 0.75rem;
+  background: transparent;
+  padding: 1rem;
+  border: none;
+}
+
+.task-form input {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.25s ease;
+  
+}
+
+.task-form input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.task-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  background: var(--card-bg);
+}
+
+.task-form button {
+  padding: 0 1.4rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.task-form button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* Filter Buttons */
 .filter-bar {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
   justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
+
 .filter-bar button {
-  padding: 0.4rem 0.8rem;
-  border: 1px solid var(--border);
+  padding: 0.5rem 1.2rem;
   background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   color: var(--text);
-  border-radius: 4px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: var(--shadow);
 }
-.filter-bar button.active {
-  background: var(--primary);
+
+.filter-bar button:hover {
+  background: var(--primary-light);
   color: #fff;
 }
 
-/* ---------- Task List ---------- */
+.filter-bar button.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+/* Task List */
 .task-list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.85rem;
 }
 
-/* ---------- Task Item ---------- */
 .task-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem;
+  padding: 0.9rem 1rem;
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 10px;
   box-shadow: var(--shadow);
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  animation: fadeIn 0.3s ease-out;
+  transition: transform 0.2s ease;
 }
+
 .task-item:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
+
 .task-item.completed .task-text {
   text-decoration: line-through;
   opacity: 0.6;
+  color: var(--muted);
 }
-.task-item input[type='checkbox'] {
+
+.task-item.dragging {
+  opacity: 0.7;
+  transform: rotate(2deg) scale(1.02);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.task-item input[type="checkbox"] {
   cursor: pointer;
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: green;
 }
+
 .task-text {
   flex: 1;
   word-break: break-word;
+  font-size: 1rem;
 }
+
 .delete-btn {
   background: none;
   border: none;
-  font-size: 1.4rem;
-  color: #e44;
+  font-size: 1.3rem;
+  color: #ff5c5c;
   cursor: pointer;
-  padding: 0 0.4rem;
+  padding: 0 0.3rem;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
+
 .delete-btn:hover {
-  color: #c33;
+  color: #d94141;
+  transform: scale(1.2);
 }
 
-/* ---------- Drag animation ---------- */
-.task-item.dragging {
-  transform: rotate(4deg);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ---------- Responsive ---------- */
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+}
+
+/* Responsive */
 @media (max-width: 480px) {
-  .container { padding: 0 0.5rem; }
-  .header { font-size: 1.5rem; }
+  .task-form {
+    flex-direction: column;
+  }
+
+  .task-form button {
+    width: 100%;
+  }
+
+  .filter-bar {
+    flex-wrap: wrap;
+  }
 }

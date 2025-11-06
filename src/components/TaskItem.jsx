@@ -4,17 +4,22 @@ import { useTasks } from '../context/TaskContext';
 const TaskItem = ({ task, provided, isDragging }) => {
   const { toggleComplete, deleteTask } = useTasks();
 
+  const className = [
+    'task-item',
+    task.completed && 'completed',
+    task.removing && 'removing',
+    isDragging && 'dragging',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <li
       ref={provided.innerRef}
       {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      className={`task-item ${task.completed ? 'completed' : ''} ${
-        isDragging ? 'dragging' : ''
-      }`}
+      className={className}
       style={{
         ...provided.draggableProps.style,
-        background: isDragging ? 'var(--primary)' : 'var(--card-bg)',
         opacity: isDragging ? 0.8 : 1,
       }}
     >
@@ -23,9 +28,18 @@ const TaskItem = ({ task, provided, isDragging }) => {
         checked={task.completed}
         onChange={() => toggleComplete(task.id)}
       />
-      <span className="task-text">{task.text}</span>
-      <button className="delete-btn" onClick={() => deleteTask(task.id)}>
-        ×
+      <span
+        className="task-text"
+        {...provided.dragHandleProps}
+        style={{ cursor: 'grab' }}
+      >
+        {task.text}
+      </span>
+      <button
+        className="delete-btn"
+        onClick={() => deleteTask(task.id)}
+      >
+        Delete
       </button>
     </li>
   );

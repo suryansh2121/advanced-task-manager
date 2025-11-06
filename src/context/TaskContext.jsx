@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useCallback } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,30 +9,35 @@ export function TaskProvider({ children }) {
   const [filter, setFilter] = useLocalStorage('filter', 'All');
   const [theme, setTheme] = useLocalStorage('theme', 'light');
 
-  const addTask = (text) => {
+  const addTask = useCallback((text) => {
     if (!text.trim()) return;
     const newTask = { id: uuidv4(), text, completed: false };
     setTasks((prev) => [...prev, newTask]);
-  };
+  }, [setTasks]);
 
-  const toggleComplete = (id) => {
+  const toggleComplete = useCallback((id) => {
     setTasks((prev) =>
       prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
-  };
+  }, [setTasks]);
 
-  const deleteTask = (id) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-  };
+  const deleteTask = useCallback((id) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, removing: true } : t))
+    );
+    setTimeout(() => {
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+    }, 300);
+  }, [setTasks]);
 
-  const moveTask = (dragIndex, hoverIndex) => {
+  const moveTask = useCallback((sourceIndex, destIndex) => {
     setTasks((prev) => {
-      const dragged = prev[dragIndex];
-      const newTasks = prev.filter((_, i) => i !== dragIndex);
-      newTasks.splice(hoverIndex, 0, dragged);
+      const newTasks = Array.from(prev);
+      const [moved] = newTasks.splice(sourceIndex, 1);
+      newTasks.splice(destIndex, 0, moved);
       return newTasks;
     });
-  };
+  }, [setTasks]);
 
   const filteredTasks = useMemo(() => {
     if (filter === 'All') return tasks;
